@@ -285,6 +285,11 @@ void build_distribution_json_data(std::string& file, Json::Value& nfb_histogram,
     double data_mean = mean_from_histogram_map(raw_nfb_histogram_map);
     std::cout << "Calulating STDV " << "\n";
     double data_stdv = calculate_stdv_from_histogram_map(raw_nfb_histogram_map, data_mean);
+    std::cout << "Calulating Skew " << "\n";
+    double data_skew = calculate_skewness_from_histogram_map(raw_nfb_histogram_map, data_mean, data_stdv);
+    std::cout << "Calulating Kurtosis " << "\n";
+    double data_kurt = calculate_kurtosis_from_histogram_map(raw_nfb_histogram_map, data_mean, data_stdv);
+    
     std::cout << "Normalizing Data  & Update Histogram " << "\n";
     std::map<double, int> normed_hist_map = update_histogram(raw_nfb_histogram_map, data_mean, data_stdv);
     
@@ -312,6 +317,8 @@ void build_distribution_json_data(std::string& file, Json::Value& nfb_histogram,
 
     nfb_histogram_metadata[file]["mean"] = data_mean;
     nfb_histogram_metadata[file]["stdv"] = data_stdv; 
+    nfb_histogram_metadata[file]["skew"] = data_skew; 
+    nfb_histogram_metadata[file]["kurt"] = data_kurt; 
     save_data("nfb_histogram_data/nfb_histogram_metadata.json", nfb_histogram_metadata);
 
     std::cout << "Done: " << file << "\n\n";
