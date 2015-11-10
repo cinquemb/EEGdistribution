@@ -85,8 +85,10 @@ std::vector<std::string> get_files_to_mine(std::string files_list){
     if (!in.is_open()) return data_file_paths;
 
     while (std::getline(in,line)){
-        if(line.size() > 1)
-            data_file_paths.push_back(line);
+        if(line.size() > 1){
+            boost::split(data_file_paths, line, boost::is_any_of(","), boost::token_compress_on);
+            break;
+        }
     }
     return data_file_paths;
 }
