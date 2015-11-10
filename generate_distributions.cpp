@@ -302,11 +302,10 @@ void build_distribution_json_data(std::string& file, Json::Value& nfb_histogram,
     Json::Value nfb_histogram_file;
     for(auto iter: normed_hist_map)
         nfb_histogram_file[std::to_string(iter.first)] = iter.second;
-    nfb_histogram_file.clear();
-    
     std::vector<std::string> file_strings;
     boost::split(file_strings,file,boost::is_any_of("/"));
     save_data("nfb_histogram_data/nfb_histogram_" + file_strings[file_strings.size()-1] + ".json", nfb_histogram_file);
+    nfb_histogram_file.clear();
 
     for(auto iter: normed_hist_map){
         if(nfb_histogram.get(std::to_string(iter.first),false) == false)
