@@ -28,7 +28,7 @@ double biosemi_microvoltage_factor = 8192;
 //sampling rate
 double sampling_rate = 2048;
 
-void string_split_histogram(std::string s, char delimiter, std::map<double, int>& h_map){
+void string_split_histogram(std::string s, char delimiter, std::map<double, unsigned long int>& h_map){
     size_t start=0;
     int count = 0;
     size_t end=s.find_first_of(delimiter);   
@@ -219,8 +219,8 @@ std::vector<double> normalize_data(std::vector<double>& v, double& _mean, double
     return rdata;
 }
 
-std::map<double, int> update_histogram(std::map<double, int>& h_map, double& _mean, double& _stdv){
-    std::map<double, int> o_map;
+std::map<double, unsigned long int> update_histogram(std::map<double, unsigned long int>& h_map, double& _mean, double& _stdv){
+    std::map<double, unsigned long int> o_map;
     for(auto iter: h_map){
         double normed_val = ((iter.first - _mean)/_stdv);
         if(o_map.count(normed_val) > 0)
@@ -234,7 +234,7 @@ std::map<double, int> update_histogram(std::map<double, int>& h_map, double& _me
 std::map<double, int> mine_file(std::string& f_name){
     std::vector<unsigned long int> new_line_indexes;
     std::vector<std::string> data_vector_string;
-    std::map<double, int> raw_nfb_histogram_map;
+    std::map<double, unsigned long int> raw_nfb_histogram_map;
 
     char *filename = (char *)f_name.c_str();
     struct stat stbuff;

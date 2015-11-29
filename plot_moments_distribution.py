@@ -42,6 +42,6 @@ for key,value in moments_dict.iteritems():
 	open(savefig_path+ str(key) + '_overall_distrubution.txt','w+').write(out_hist)
 	plt.xlabel("%s value" % (key))
 	plt.ylabel("total %s values" % (key))
-	plt.xlim([real_min_b,max_b])
+	plt.xlim([-max_b,max_b])
 	fig.savefig(savefig_path+ str(key) + '_overall_distrubution.png')
 	plt.close()

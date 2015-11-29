@@ -24,10 +24,12 @@ for key,value in data.iteritems():
 	y.append(value)
 
 print 'done parsing file'
+max_x = max(list(x))
 
 fig = plt.figure()
 fig.suptitle('raw eeg voltage distribution normalized', fontsize=20)
 plt.scatter(x, y)
+plt.xlim([-max_x,max_x])
 plt.xlabel("Normed values")
 plt.ylabel("Value occurance")
 fig.savefig('overall_distrubution.png')
