@@ -232,8 +232,6 @@ std::map<double, unsigned long int> update_histogram(std::map<double, unsigned l
 }
 
 std::map<double, int> mine_file(std::string& f_name){
-    std::vector<unsigned long int> new_line_indexes;
-    std::vector<std::string> data_vector_string;
     std::map<double, unsigned long int> raw_nfb_histogram_map;
 
     char *filename = (char *)f_name.c_str();
@@ -264,7 +262,6 @@ std::map<double, int> mine_file(std::string& f_name){
 
             if(c[k] == '\n'){
                 count++;
-                data_vector_string.clear();
                 string_split_histogram(row_string, ' ', raw_nfb_histogram_map);
                 row_string.clear();
             }else{

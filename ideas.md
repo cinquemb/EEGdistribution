@@ -12,9 +12,11 @@
 			-kurtosis
 	- defining a state density across subjects
 		- un-normalize data across all subjects and recompute mean, stdv, skew, and kurtosis
-			- play around with outliar removal etc
+			- iterate over nfb_histogram_metadata, load individual distrubution file, unormalize, save un-normalize data in map
+			- play around with outliar removal etc?
 		- use values and compute running normalized mean, stdv, skew, kurtosis along each channel for each time series
 			- figure out time bins (1/2048 of a second, to 1 second)
+				- fixed length vector for each channel (armadillo matrix), zero initialized, that cycles through and stores the moment in order
 			- generate plots/gifs
 
 - determine range of electropotential to help define hamiltonian (microcanoical ensamble) for along the scalp
