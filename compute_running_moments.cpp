@@ -44,8 +44,13 @@ std::vector<std::string> get_files_to_mine(std::string files_list){
 
 void save_data(std::string file_string, std::string analysis_type, std::vector<double> data_vector){
     int start = 0;
-    std::size_t pos = file_string.find(".txt");
-    std::string out_file = "nfb_running_moments/" + file_string.substr(0,pos) + analysis_type + ".txt";
+
+    std::vector<std::string> file_strings;
+    boost::split(file_strings,file_string,boost::is_any_of("/"));
+    std::string f_name = file_strings[file_strings.size()-1];
+
+    std::size_t pos = f_name.find(".txt");
+    std::string out_file = "nfb_running_moments/" + f_name.substr(0,pos) + analysis_type + ".txt";
     std::ofstream o(out_file);
     int length_data = data_vector.size();
 
@@ -146,19 +151,20 @@ std::map<int, std::map<std::string, std::vector<double>>> mine_file(std::string&
                 		double t_stdv = std::sqrt(it_col.second["_accum_stdv"]/ (bin_size-1));
                 		double t_skew = it_col.second["_accum_skew"]/(double)bin_size;
                 		double t_kurt = it_col.second["_accum_kurt"]/(double)bin_size;
-                		if(column_running_moments.count(it_col.first) > 0){
-			            	column_running_moments[it_col.first] = {
-			            		{"mean", {t_mean}},
-			            		{"stdv", {t_stdv}},
-			            		{"skew", {t_skew}},
-			            		{"kurt", {t_kurt}}
-			            	};
+                        int column = it_col.first;
+                		if(column_running_moments.count(column) > 0){
+			            	column_running_moments[column]["mean"].push_back(t_mean);
+                            column_running_moments[column]["stdv"].push_back(t_stdv);
+                            column_running_moments[column]["skew"].push_back(t_skew);
+                            column_running_moments[column]["kurt"].push_back(t_kurt);
 			            }
 			            else{
-			            	column_running_moments[count]["mean"].push_back(t_mean);
-			            	column_running_moments[count]["stdv"].push_back(t_stdv);
-			            	column_running_moments[count]["skew"].push_back(t_skew);
-			            	column_running_moments[count]["kurt"].push_back(t_kurt);
+                            column_running_moments[column] = {
+                                {"mean", {t_mean}},
+                                {"stdv", {t_stdv}},
+                                {"skew", {t_skew}},
+                                {"kurt", {t_kurt}}
+                            };
 			            }
                 	}
                 	column_moment_sum_maps.clear();
@@ -176,12 +182,12 @@ std::map<int, std::map<std::string, std::vector<double>>> mine_file(std::string&
 }
 
 void compute_running_moments_json_data(std::string& file, double& _overall_mean, double& _overall_stdv, double& _overall_skew, double& _overall_kurt){
-    std::cout << "Starting Mining: " << file << "\n\n";
+    std::cout << "Starting Mining: " << file << "\n";
     std::map<int, std::map<std::string, std::vector<double>>> column_running_moments = mine_file(file, _overall_mean, _overall_stdv, _overall_skew, _overall_kurt);
 
     for(auto iter_chans: column_running_moments){
         for(auto iter_chan_moments: iter_chans.second){
-            save_data(file, "channel_" + std::to_string(iter_chans.first) + "_" + iter_chan_moments.first, iter_chan_moments.second);
+            save_data(file, + "bin_size_" + std::to_string(bin_size) + "_channel_" + std::to_string(iter_chans.first) + "_" + iter_chan_moments.first, iter_chan_moments.second);
         }
         iter_chans.second.clear();     
     }
