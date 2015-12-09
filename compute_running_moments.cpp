@@ -45,7 +45,7 @@ std::vector<std::string> get_files_to_mine(std::string files_list){
 void save_data(std::string file_string, std::string analysis_type, std::vector<double> data_vector){
     int start = 0;
     std::size_t pos = file_string.find(".txt");
-    std::string out_file = file_string.substr(0,pos) + analysis_type + ".txt";
+    std::string out_file = "nfb_running_moments/" + file_string.substr(0,pos) + analysis_type + ".txt";
     std::ofstream o(out_file);
     int length_data = data_vector.size();
 
