@@ -25,7 +25,7 @@ double biosemi_microvoltage_factor = 8192;
 double sampling_rate = 2048;
 
 //bin size
-int bin_size = 1000;
+int bin_size = 100;
 
 std::vector<std::string> get_files_to_mine(std::string files_list){
     std::vector<std::string> data_file_paths;
@@ -62,6 +62,21 @@ void save_data(std::string file_string, std::string analysis_type, std::vector<d
             o << data_vector[k];
     }
     o.close();
+}
+
+void save_data(std::string file_string, Json::Value& data){
+    std::vector<std::string> file_strings;
+    boost::split(file_strings,file_string,boost::is_any_of("/"));
+    std::string f_name = file_strings[file_strings.size()-1];
+
+    std::size_t pos = f_name.find(".txt");
+    std::string out_file = "nfb_running_moments/" + f_name.substr(0,pos) + "_bin_size_" + std::to_string(bin_size) + ".json";
+    std::cout << "JSON data file: " << out_file << std::endl;
+
+    std::ofstream nfb_json;
+    nfb_json.open(out_file);
+    nfb_json << data;
+    nfb_json.close();
 }
 
 Json::Value load_unnormed_histogram_metadata(){
@@ -181,16 +196,29 @@ std::map<int, std::map<std::string, std::vector<double>>> mine_file(std::string&
     return column_running_moments;
 }
 
+Json::Value convert_data_to_json(std::map<int, std::map<std::string, std::vector<double>>>& column_running_moments){
+    Json::Value column_running_moments_json;
+    for(auto iter_chans: column_running_moments){
+        for(auto iter_chan_moments: iter_chans.second){
+            Json::Value moment_values(Json::arrayValue);
+            for(auto iter_chan_moment_values: iter_chan_moments.second)
+                moment_values.append(iter_chan_moment_values);
+            Json::Value moment_type;
+            moment_type[iter_chan_moments.first] = moment_values;
+            column_running_moments_json[std::to_string(iter_chans.first)] = moment_type;
+        }
+        iter_chans.second.clear();     
+    }
+    return column_running_moments_json;
+}
+
 void compute_running_moments_json_data(std::string& file, double& _overall_mean, double& _overall_stdv, double& _overall_skew, double& _overall_kurt){
     std::cout << "Starting Mining: " << file << "\n";
     std::map<int, std::map<std::string, std::vector<double>>> column_running_moments = mine_file(file, _overall_mean, _overall_stdv, _overall_skew, _overall_kurt);
 
-    for(auto iter_chans: column_running_moments){
-        for(auto iter_chan_moments: iter_chans.second){
-            save_data(file, + "bin_size_" + std::to_string(bin_size) + "_channel_" + std::to_string(iter_chans.first) + "_" + iter_chan_moments.first, iter_chan_moments.second);
-        }
-        iter_chans.second.clear();     
-    }
+    Json::Value column_running_moments_json = convert_data_to_json(column_running_moments);
+    save_data(file, column_running_moments_json);
+
     std::cout << "Done: " << file << "\n\n";
 }
 
