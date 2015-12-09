@@ -248,36 +248,5 @@ int main(int argc, char *argv[]) {
     nfb_unnormed_histogram_metadata["skew"] = _global_skew; 
     nfb_unnormed_histogram_metadata["kurt"] = _global_kurt; 
     save_data("nfb_histogram_data/nfb_unnormed_histogram_metadata.json", nfb_unnormed_histogram_metadata);
-
-
-
-	/*
-	std::cout << "Calulating Global Mean " << "\n";
-    double data_mean = mean_from_histogram_map(nfb_unnormed_histogram);
-    std::cout << "Calulating Global STDV " << "\n";
-    double data_stdv = calculate_stdv_from_histogram_map(nfb_unnormed_histogram, data_mean);
-    std::cout << "Calulating Global Skew " << "\n";
-    double data_skew = calculate_skewness_from_histogram_map(nfb_unnormed_histogram, data_mean, data_stdv);
-    std::cout << "Calulating Global Kurtosis " << "\n";
-    double data_kurt = calculate_kurtosis_from_histogram_map(nfb_unnormed_histogram, data_mean, data_stdv);
-    std::cout << "Normalizing Data  & Update Histogram " << "\n";
-    std::map<double, unsigned long int> normed_hist_map = norm_histogram(nfb_unnormed_histogram, data_mean, data_stdv);
-    nfb_unnormed_histogram.clear();
-
-    Json::Value nfb_unnormed_histogram_metadata;
-    nfb_unnormed_histogram_metadata["mean"] = data_mean;
-    nfb_unnormed_histogram_metadata["stdv"] = data_stdv; 
-    nfb_unnormed_histogram_metadata["skew"] = data_skew; 
-    nfb_unnormed_histogram_metadata["kurt"] = data_kurt; 
-
-    save_data("nfb_histogram_data/nfb_unnormed_histogram_metadata.json", nfb_unnormed_histogram_metadata);
-
-
-	for(auto iter: normed_hist_map){
-        nfb_unnormed_histogram_file[std::to_string(iter.first)] = (Json::LargestUInt)iter.second;
-    }
-    normed_hist_map.clear();
-    save_data("nfb_histogram_data/nfb_unnormed_histogram.json", nfb_unnormed_histogram_file);
-    */
 	return 0;
 }
