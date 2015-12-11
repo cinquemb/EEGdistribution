@@ -64,13 +64,18 @@ void save_data(std::string file_string, std::string analysis_type, std::vector<d
     o.close();
 }
 
-void save_data(std::string file_string, Json::Value& data){
+std::string prep_file_string_moments(std::string& file_string){
     std::vector<std::string> file_strings;
     boost::split(file_strings,file_string,boost::is_any_of("/"));
     std::string f_name = file_strings[file_strings.size()-1];
 
     std::size_t pos = f_name.find(".txt");
     std::string out_file = "nfb_running_moments/" + f_name.substr(0,pos) + "_bin_size_" + std::to_string(bin_size) + ".json";
+    return out_file;
+}
+
+void save_data(std::string file_string, Json::Value& data){
+    std::string out_file = prep_file_string_moments(file_string);
     std::cout << "JSON data file: " << out_file << std::endl;
 
     std::ofstream nfb_json;
@@ -87,7 +92,8 @@ Json::Value load_unnormed_histogram_metadata(){
         try{
             json_data >> root;
         }catch(...){
-             Json::Value root;
+            std::cout << "LOADING METADATA FAILED" << std::endl;
+            exit(0);
         }
     }
     return root;
@@ -199,15 +205,15 @@ std::map<int, std::map<std::string, std::vector<double>>> mine_file(std::string&
 Json::Value convert_data_to_json(std::map<int, std::map<std::string, std::vector<double>>>& column_running_moments){
     Json::Value column_running_moments_json;
     for(auto iter_chans: column_running_moments){
+        Json::Value moment_type;
         for(auto iter_chan_moments: iter_chans.second){
             Json::Value moment_values(Json::arrayValue);
             for(auto iter_chan_moment_values: iter_chan_moments.second)
                 moment_values.append(iter_chan_moment_values);
-            Json::Value moment_type;
             moment_type[iter_chan_moments.first] = moment_values;
             column_running_moments_json[std::to_string(iter_chans.first)] = moment_type;
+            iter_chan_moments.second.clear();
         }
-        iter_chans.second.clear();     
     }
     return column_running_moments_json;
 }
@@ -236,7 +242,14 @@ int main(int argc, char *argv[]){
     std::cout << "Files to mine: " << files.size() << "\n\n";
 
     for(int i=0;i<files.size();i++){
-        compute_running_moments_json_data(files[i], _global_mean, _global_stdv, _global_skew, _global_kurt);
+        std::string out_file = prep_file_string_moments(files[i]);
+
+        std::ifstream m_f_check(out_file);
+        if(!m_f_check.good()){
+            compute_running_moments_json_data(files[i], _global_mean, _global_stdv, _global_skew, _global_kurt);
+        }else{
+            std::cout << "File exists, skipping: " << out_file << "\n\n";
+        }
     }
 
 	return 0;
