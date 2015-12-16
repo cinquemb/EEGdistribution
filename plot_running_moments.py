@@ -53,7 +53,6 @@ for x in temp_dir_data:
 
 		for key,value in moments_dict.iteritems():
 			__png_file_name__ = 'nfb_running_moments_plots/' + str(key) + '_' + _file_.split('/')[-1].split('.json')[0] + '_overall_distrubution.png'
-			if not os.path.isfile(__png_file_name__):
 			fig = plt.figure()
 			fig.suptitle(key.title() + ' distribution (for ' +_file_.split('/')[-1].split('.json')[0] +')', fontsize=20)
 			c,b,ba = plt.hist(value, num_bins, alpha=0.5)
