@@ -18,6 +18,10 @@
 			- figure out time bins (1/2048 of a second, to 1 second)
 				- fixed length vector for each channel (armadillo matrix), zero initialized, that cycles through and stores the moment in order
 			- generate plots/gifs
+				- distrubitions for each moment
+					~~- across all leads and bins (python|time-independant)~~
+					- across each lead channel (python|time-independant)
+					- plot each lead over time bin? compute derivative? (c++| time dependent)
 
 - determine range of electropotential to help define hamiltonian (microcanoical ensamble) for along the scalp
 
