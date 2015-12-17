@@ -20,8 +20,8 @@
 			- generate plots/gifs
 				- distrubitions for each moment
 					~~- across all leads and bins (python|time-independant)~~
-					- across each lead channel (python|time-independant)
-					- plot each lead over time bin? compute derivative? (c++| time dependent)
+					- ~~plot each lead over time bin?~~ compute derivative? (c++/python| time dependent)
+				- create tool to open moment for a random persons datasets to compare
 
 - determine range of electropotential to help define hamiltonian (microcanoical ensamble) for along the scalp
 
