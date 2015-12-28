@@ -28,6 +28,11 @@
 					-mean_all datasets (one channel off)
 				- 48:
 					-mean_all datasets (one channel off)
+				- blank:
+					-mean_all datasets (one channel off)
+				- DAE:
+					-mean_all datasets (one channel off)
+					
 		- use values and compute running normalized mean, stdv, skew, kurtosis along each channel for each time series
 			- figure out time bins (1/2048 of a second, to 1 second)
 				- fixed length vector for each channel (armadillo matrix), zero initialized, that cycles through and stores the moment in order

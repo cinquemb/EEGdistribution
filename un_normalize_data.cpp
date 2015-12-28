@@ -20,6 +20,8 @@ const int offset_node = 2;
 
 const int num_leads = 128;
 
+bool is_filtered = true;
+
 //factor to convert biosemi values into uv
 double biosemi_microvoltage_factor = 8192;
 
@@ -66,6 +68,21 @@ Json::Value load_current_histogram_metadata(){
         }
     }
     return root;
+}
+
+std::vector<std::string> get_files_to_filter(std::string files_list){
+    std::vector<std::string> data_file_paths;
+    std::string line;
+    std::ifstream in(files_list.c_str());
+    if (!in.is_open()) return data_file_paths;
+
+    while (std::getline(in,line)){
+        if(line.size() > 1){
+            boost::split(data_file_paths, line, boost::is_any_of(","), boost::token_compress_on);
+            break;
+        }
+    }
+    return data_file_paths;
 }
 
 double calculate_stdv_from_histogram_map(std::map<double, unsigned long int>& h_map, double& _mean){
@@ -135,6 +152,15 @@ int main(int argc, char *argv[]) {
 	Json::Value nfb_unnormed_histogram_file;
 	int file_count = 0;
 
+	if(is_filtered){
+		std::vector<std::string> filtered_files;
+		std::map<std::string,int> filtered_files_map;
+	    std::string mined_file_list = "nfb-mined_file_list_filtered.txt";
+	    filtered_files = get_files_to_filter(mined_file_list);
+	    for(auto iter: filtered_files)
+	    	filtered_files_map[iter] = 1;
+	}
+
 	std::cout << "Loading metadata" << "\n";
 	Json::Value nfb_histogram_metadata_json = load_current_histogram_metadata();
 	for (Json::ValueIterator it = nfb_histogram_metadata_json.begin(); it != nfb_histogram_metadata_json.end(); ++it){
@@ -142,6 +168,15 @@ int main(int argc, char *argv[]) {
 		std::vector<std::string> file_strings;
 		boost::split(file_strings,uf_name,boost::is_any_of("/"));
 		std::string f_name = file_strings[file_strings.size()-1];
+
+		if(is_filtered){
+			if(filtered_files_map.count(f_name) > 0){
+				std::cout << "filtering parsing data for: " << f_name <<  "\n";
+				continue;
+			}
+		}
+
+
 
 		double t_mean = it->get("mean", "mean").asFloat();
 		double t_stdv = it->get("stdv", "stdv").asFloat();
@@ -246,7 +281,11 @@ int main(int argc, char *argv[]) {
     nfb_unnormed_histogram_metadata["mean"] = _global_mean;
     nfb_unnormed_histogram_metadata["stdv"] = _global_stdv; 
     nfb_unnormed_histogram_metadata["skew"] = _global_skew; 
-    nfb_unnormed_histogram_metadata["kurt"] = _global_kurt; 
-    save_data("nfb_histogram_data/nfb_unnormed_histogram_metadata.json", nfb_unnormed_histogram_metadata);
+    nfb_unnormed_histogram_metadata["kurt"] = _global_kurt;
+    if(is_filtered)
+    	save_data("nfb_histogram_data/nfb_unnormed_histogram_metadata_filtered.json", nfb_unnormed_histogram_metadata);
+    else
+    	save_data("nfb_histogram_data/nfb_unnormed_histogram_metadata_unfiltered.json", nfb_unnormed_histogram_metadata);
+
 	return 0;
 }
