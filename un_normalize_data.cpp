@@ -168,6 +168,7 @@ int main(int argc, char *argv[]) {
 		std::vector<std::string> file_strings;
 		boost::split(file_strings,uf_name,boost::is_any_of("/"));
 		std::string f_name = file_strings[file_strings.size()-1];
+		std::string unnomred_data_file = "nfb_histogram_data/nfb_unnormed_histogram_" + file_strings[file_strings.size()-1] + ".json";
 
 		if(is_filtered){
 			if(filtered_files_map.count(f_name) > 0){
@@ -176,7 +177,11 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-
+		std::ifstream undf_check(unnomred_data_file);
+        if(undf_check.good()){
+        	undf_check.close();
+        	continue;
+        }
 
 		double t_mean = it->get("mean", "mean").asFloat();
 		double t_stdv = it->get("stdv", "stdv").asFloat();
@@ -196,7 +201,7 @@ int main(int argc, char *argv[]) {
 	    std::cout << "Done: " << f_name <<  "\n";
 	    if (file_count % 100 == 0)
 	    	std::cout << "Compleded " <<  file_count <<"\n";
-	    save_data("nfb_histogram_data/nfb_unnormed_histogram_" + file_strings[file_strings.size()-1] + ".json", tmp_nfb_unnormed_histogram);
+	    save_data(unnomred_data_file, tmp_nfb_unnormed_histogram);
 
 
 	    tmp_nfb_histogram_json.clear();
